@@ -7,6 +7,9 @@
     "lint": "./node_modules/.bin/eslint lib/*.js bin/*",
     "test": "npm run lint"
   },
+  "bin": {
+    "slack-cli-stream": "bin/slack-cli-stream"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hideack/slack-cli-stream.git"
@@ -14,7 +17,7 @@
   "keywords": [
     "slack"
   ],
-  "author": "hideaki terai",
+  "author": "hideack",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/hideack/slack-cli-stream/issues"
