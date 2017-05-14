@@ -1,6 +1,8 @@
 # slack-cli-stream
 ## Installation
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hideack/slack-cli-stream.svg)](https://greenkeeper.io/)
+
 ```
 $ npm install -g slack-cli-stream
 ```
