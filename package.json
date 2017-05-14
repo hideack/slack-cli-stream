@@ -4,7 +4,7 @@
   "description": "slack stream",
   "main": "index.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint *.js",
+    "lint": "./node_modules/.bin/eslint lib/*.js bin/*",
     "test": "npm run lint"
   },
   "repository": {
