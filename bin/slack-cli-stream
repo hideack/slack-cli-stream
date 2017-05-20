@@ -15,6 +15,7 @@ let showLogo = () => {
 program
   .version(require("../package.json").version)
   .option("-t, --token <token>", "Slack API Token")
+  .option("-d, --debug <path>", "Debug flag. (The destination to save your log file.)")
   .usage("[options] <parameters>")
   .parse(process.argv);
 
