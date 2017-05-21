@@ -1,6 +1,6 @@
 {
   "name": "slack-cli-stream",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "slack stream",
   "main": "index.js",
   "scripts": {
