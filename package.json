@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint lib/*.js bin/*",
-    "test": "npm run lint"
+    "test": "npm run lint && ./node_modules/mocha/bin/mocha --require ./test/helper.js"
   },
   "bin": {
     "slack-cli-stream": "bin/slack-cli-stream"
@@ -33,6 +33,8 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "eslint": "^3.19.0"
+    "chai": "^3.5.0",
+    "eslint": "^3.19.0",
+    "mocha": "^3.4.1"
   }
 }
