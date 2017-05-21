@@ -15,4 +15,7 @@ describe("ユーティリティのテスト", () => {
     assert.equal(util.replaceSlackId("<@U0XXYYZZ0> <@U0XXYYZZ1> Hello."), "@alice @bob Hello.", "Slack IDに置換できている");
   });
 
+  it("Slack message中にメンションが無い場合はそのまま出力されること", () => {
+    assert.equal(util.replaceSlackId("Hello."), "Hello.", "渡した文字列がそのまま変える");
+  });
 });
