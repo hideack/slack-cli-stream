@@ -4,8 +4,8 @@
   "description": "slack stream",
   "main": "index.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint lib/*.js bin/*",
-    "test": "npm run lint && ./node_modules/mocha/bin/mocha --require ./test/helper.js"
+    "lint": "eslint lib/*.js bin/*",
+    "test": "npm run lint && mocha --require ./test/helper.js"
   },
   "bin": {
     "slack-cli-stream": "bin/slack-cli-stream"
