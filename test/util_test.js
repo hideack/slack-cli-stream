@@ -25,12 +25,18 @@ describe("Slack messageのテキストパーサーのテスト", () => {
 
   let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'normal message', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
 
+  let noTextMessage = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+
   it("通常のメッセージの場合はtextプロパティ参照", () => {
     assert.equal(util.parseText(message), "normal message", "メッセージ中のtextが抽出できている");
   });
 
   it("bot_messageでtextが無く、attachmentsプロパティの中にtextがある場合、その部分をテキストとして抽出できること", () => {
     assert.equal(util.parseText(twitterBotMessage), "Test message", "botメッセージ中のattachmentsからtextが抽出できている");
+  });
+
+  it("messageでtextが無く、attachmentsプロパティの中にtextも無い場合、空文字列が返ること", () => {
+    assert.equal(util.parseText(noTextMessage), "");
   });
 });
 
