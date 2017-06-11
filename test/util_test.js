@@ -51,9 +51,9 @@ describe("テキスト装飾のテスト", () => {
     assert.equal(util.decolateText("Hello *world*"), expectedText, "worldという単語が太文字になっている");
   });
 
-  it("引用表記された文字が > になること", () => {
-    let expectedText = "> Hey";
+  it("引用表記された文字が > になり、以降イタリック表記されること", () => {
+    let expectedText = ">\u001b[3m Hey\u001b[23m";
 
-    assert.equal(util.decolateText("&gt; Hey"), expectedText, "Slack RTM APIから得られるエスケープされた引用符が > に置換されること");
+    assert.equal(util.decolateText("&gt; Hey"), expectedText);
   });
 });
