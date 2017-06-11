@@ -40,3 +40,10 @@ describe("Slack messageのテキストパーサーのテスト", () => {
   });
 });
 
+describe("テキスト装飾のテスト", () => {
+  it("協調表記された文字が太文字になること", () => {
+    let expectedText = "Hello \u001b[1mworld\u001b[22m";
+
+    assert.equal(util.decolateText("Hello *world*"), expectedText, "worldという単語が太文字になっている");
+  });
+});
