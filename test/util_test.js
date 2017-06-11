@@ -41,9 +41,19 @@ describe("Slack messageのテキストパーサーのテスト", () => {
 });
 
 describe("テキスト装飾のテスト", () => {
+  it("装飾文字列が含まれない場合はそのままテキストが返ってくること", () => {
+    assert.equal(util.decolateText("Hello slack"), "Hello slack", "そのまま文字列が返ってくる");
+  });
+
   it("協調表記された文字が太文字になること", () => {
     let expectedText = "Hello \u001b[1mworld\u001b[22m";
 
     assert.equal(util.decolateText("Hello *world*"), expectedText, "worldという単語が太文字になっている");
+  });
+
+  it("引用表記された文字が > になること", () => {
+    let expectedText = "> Hey";
+
+    assert.equal(util.decolateText("&gt; Hey"), expectedText, "Slack RTM APIから得られるエスケープされた引用符が > に置換されること");
   });
 });
