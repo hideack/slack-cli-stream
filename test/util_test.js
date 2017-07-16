@@ -69,3 +69,10 @@ describe("テキスト装飾のテスト", () => {
     assert.equal(util.decolateText("Hello hideack. Have a nice day"), expectedText, "hideackとniceという単語が赤太文字になっている");
   });
 });
+
+describe("設定ファイル読み込みのテスト", () => {
+  it("設定ファイルを読み込み強調キーワードが更新されていること", () => {
+    util.parseKeywordsFile('./test/settings_sample.yaml');
+    assert.deepEqual(util.keywords, ["abc", "xyz"], "キーワードが設定ファイルに基いて更新されている");
+  });
+});
