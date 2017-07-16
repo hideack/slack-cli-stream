@@ -71,6 +71,11 @@ describe("テキスト装飾のテスト", () => {
 });
 
 describe("設定ファイル読み込みのテスト", () => {
+  it("設定ファイルがない場合はキーワードは更新されない", () => {
+    util.parseKeywordsFile('./test/null.yaml');
+    assert.deepEqual(util.keywords, ["hideack", "nice"], "キーワードがなにも入っていない");
+  });
+
   it("設定ファイルを読み込み強調キーワードが更新されていること", () => {
     util.parseKeywordsFile('./test/settings_sample.yaml');
     assert.deepEqual(util.keywords, ["abc", "xyz"], "キーワードが設定ファイルに基いて更新されている");
