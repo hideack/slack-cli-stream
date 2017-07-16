@@ -64,7 +64,7 @@ describe("テキスト装飾のテスト", () => {
   });
 
   it("キーワード指定された文字が赤太文字となること", () => {
-    let expectedText = "Hello \u001b[31m\u001b[1mhideack\u001b[22m\u001b[39m. Have a nice day";
-    assert.equal(util.decolateText("Hello hideack. Have a nice day"), expectedText, "hideackという単語が赤太文字になっている");
+    let expectedText = "Hello \u001b[31m\u001b[1mhideack\u001b[22m\u001b[39m. Have a \u001b[31m\u001b[1mnice\u001b[22m\u001b[39m day";
+    assert.equal(util.decolateText("Hello hideack. Have a nice day"), expectedText, "hideackとniceという単語が赤太文字になっている");
   });
 });
