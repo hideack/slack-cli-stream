@@ -5,6 +5,7 @@ describe("Slack ID置換のテスト", () => {
   beforeEach( () => {
     util.users['U0XXYYZZ0'] =  {name: "alice"};
     util.users['U0XXYYZZ1'] =  {name: "bob"};
+    util.keywords = ["hideack", "nice"];
   });
 
   it("Slack message中の1ユーザに対するメンションのユーザIDを置換できること", () => {
