@@ -5,6 +5,7 @@ describe("Slack ID置換のテスト", () => {
   beforeEach( () => {
     util.users['U0XXYYZZ0'] =  {name: "alice"};
     util.users['U0XXYYZZ1'] =  {name: "bob"};
+    util.keywords = ["hideack", "nice"];
   });
 
   it("Slack message中の1ユーザに対するメンションのユーザIDを置換できること", () => {
@@ -61,5 +62,22 @@ describe("テキスト装飾のテスト", () => {
     let expectedText = ">\u001b[3m Hey\u001b[23m";
 
     assert.equal(util.decolateText("&gt; Hey"), expectedText);
+  });
+
+  it("キーワード指定された文字が赤太文字となること", () => {
+    let expectedText = "Hello \u001b[31m\u001b[1mhideack\u001b[22m\u001b[39m. Have a \u001b[31m\u001b[1mnice\u001b[22m\u001b[39m day";
+    assert.equal(util.decolateText("Hello hideack. Have a nice day"), expectedText, "hideackとniceという単語が赤太文字になっている");
+  });
+});
+
+describe("設定ファイル読み込みのテスト", () => {
+  it("設定ファイルがない場合はキーワードは更新されない", () => {
+    util.parseSettingFile('./test/null.yaml');
+    assert.deepEqual(util.keywords, ["hideack", "nice"], "キーワードがなにも入っていない");
+  });
+
+  it("設定ファイルを読み込み強調キーワードが更新されていること", () => {
+    util.parseSettingFile('./test/settings_sample.yaml');
+    assert.deepEqual(util.keywords, ["abc", "xyz"], "キーワードが設定ファイルに基いて更新されている");
   });
 });
