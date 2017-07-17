@@ -10,6 +10,7 @@ $ npm install -g slack-cli-stream
 ```
 
 ## Usage
+### default
 
 ```
 $ slack-cli-stream --token xoxp-**********
@@ -17,6 +18,22 @@ $ slack-cli-stream --token xoxp-**********
 
 - You can generate a tokens here: 
   - https://api.slack.com/web
+
+### settings
+
+```
+$ slack-cli-stream --settings setting.yaml
+```
+
+#### setting.yaml
+
+```yaml
+keywords:
+  - abc
+  - xyz
+token:
+  - xoxp-xxxx-xxxx-xxxx-xxxx
+```
 
 ## Contributing
 
