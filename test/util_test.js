@@ -79,5 +79,6 @@ describe("設定ファイル読み込みのテスト", () => {
   it("設定ファイルを読み込み強調キーワードが更新されていること", () => {
     util.parseSettingFile('./test/settings_sample.yaml');
     assert.deepEqual(util.keywords, ["abc", "xyz"], "キーワードが設定ファイルに基いて更新されている");
+    assert.equal(util.token, "xoxp-xxxx-xxxx-xxxx-xxxx", "Slackのトークン文字列が更新されている");
   });
 });
