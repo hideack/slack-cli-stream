@@ -27,6 +27,7 @@
     "@slack/client": "^3.11.0",
     "chalk": "^2.0.1",
     "commander": "^2.9.0",
+    "fifo": "^2.3.0",
     "js-yaml": "^3.9.0",
     "moment": "^2.18.1",
     "nconf": "^0.8.4",
