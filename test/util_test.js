@@ -1,5 +1,6 @@
 let assert = require("chai").assert;
 let util = require("../lib/utility.js");
+let moment = require("moment");
 
 describe("Slack ID置換のテスト", () => {
   beforeEach( () => {
@@ -82,3 +83,39 @@ describe("設定ファイル読み込みのテスト", () => {
     assert.equal(util.token, "xoxp-xxxx-xxxx-xxxx-xxxx", "Slackのトークン文字列が更新されている");
   });
 });
+
+
+describe("メッセージバッファのテスト", () => {
+  it("3件分のメッセージバッファを行うと3件分のバッファが作成されること", () => {
+    for (let i=0; i<3; i++) {
+      util.addMessageBuffer({bufferKey: "#test", lines: [`${i}`], times:moment()});
+    }
+
+    messageBuffer = util.buffer["#test"];
+    assert.equal(messageBuffer.length, 3, "3件分のバッファーが存在する");
+  });
+
+  it("21件分のメッセージバッファを行うと20件分のバッファが作成されること", () => {
+    for (let i=0; i<21; i++) {
+      util.addMessageBuffer({bufferKey: "#test", lines: [`${i}`], times:moment()});
+    }
+
+    messageBuffer = util.buffer["#test"];
+    assert.equal(messageBuffer.length, 20, "20件分のバッファーが存在する");
+  });
+
+  it("21件分のメッセージバッファを行うと先頭のメッセージが2件目から21件目ののメッセージでバッファされること", () => {
+    for (let i=0; i<21; i++) {
+      util.addMessageBuffer({bufferKey: "#test", lines: [`${i}`], times:moment()});
+    }
+
+    messageBuffer = util.buffer["#test"];
+
+    let count = 1;
+    messageBuffer.forEach((data) => {
+      assert.equal(data.lines[0], `${count}`, `${count + 1}件目のデータが一致すること`);
+      count++;
+    });
+  });
+});
+
