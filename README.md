@@ -31,8 +31,7 @@ $ slack-cli-stream --settings setting.yaml
 keywords:
   - abc
   - xyz
-token:
-  - xoxp-xxxx-xxxx-xxxx-xxxx
+token: xoxp-xxxx-xxxx-xxxx-xxxx
 ```
 
 ## Contributing
