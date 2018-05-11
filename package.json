@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/hideack/slack-cli-stream#readme",
   "dependencies": {
-    "@slack/client": "^3.11.0",
+    "@slack/client": "^4.2.1",
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "fifo": "^2.3.0",
