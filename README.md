@@ -17,7 +17,7 @@ $ slack-cli-stream --token xoxp-**********
 ```
 
 - You can generate a tokens here: 
-  - https://api.slack.com/web
+  - https://api.slack.com/custom-integrations/legacy-tokens
 
 ### settings
 
