@@ -82,6 +82,12 @@ describe("設定ファイル読み込みのテスト", () => {
     assert.deepEqual(util.keywords, ["abc", "xyz"], "キーワードが設定ファイルに基いて更新されている");
     assert.equal(util.token, "xoxp-xxxx-xxxx-xxxx-xxxx", "Slackのトークン文字列が更新されている");
   });
+
+  it("hook用コマンドが読み取れること", () => {
+    util.parseSettingFile('./test/settings_sample.yaml');
+    assert.equal(util.hook, "curl -X http://example.com/ -d {hoge:foo}", "hook用コマンドがYAMLから読み取れている");
+  });
+
 });
 
 
