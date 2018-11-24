@@ -18,6 +18,7 @@ program
   .option("-s, --settings <path>", "Load settings from YAML")
   .option("-u, --user <user>", "The name to be displayed on screens.")
   .option("-d, --debug <path>", "Debug flag. (The destination to save your log file.)")
+  .option("-h, --hook", "Enable realtime messaging hook.")
   .usage("[options] <parameters>")
   .parse(process.argv);
 
