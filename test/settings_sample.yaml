@@ -6,7 +6,7 @@ hook: curl -X http://example.com/ -d {hoge:foo}
 hooks:
   -
     user: hideack
-    channel: #times_hideack
+    channel: times_hideack
     keyword: テストです
     hook: curl -X http://example.com/ -d {hoge:foo}
   -
