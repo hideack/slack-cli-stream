@@ -88,6 +88,21 @@ describe("設定ファイル読み込みのテスト", () => {
     assert.equal(util.hook, "curl -X http://example.com/ -d {hoge:foo}", "hook用コマンドがYAMLから読み取れている");
   });
 
+  describe("hooks定義読み取りのテスト", () => {
+    it("複数のhook定義が入っていること(但しhookの定義がないものは除外される)", () => {
+      util.parseSettingFile('./test/settings_sample.yaml');
+      assert.equal(util.hooks.length, 2, "2件分の定義が存在すること");
+    });
+
+    it("1件目の定義に必要な設定が読み取られていること", () => {
+      util.parseSettingFile('./test/settings_sample.yaml');
+      assert.equal(util.hooks[0].user,    "hideack", "Slack IDの定義が存在する");
+      assert.equal(util.hooks[0].channel, "#times_hideack", "チャンネルの定義が存在する");
+      assert.equal(util.hooks[0].keyword, "テストです", "一致チェック用のキーワードが存在する");
+      assert.equal(util.hooks[0].command, "curl -X http://example.com/ -d {hoge:foo}", "コマンドが存在する");
+    });
+
+  });
 });
 
 
