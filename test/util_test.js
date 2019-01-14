@@ -93,7 +93,9 @@ describe("設定ファイル読み込みのテスト", () => {
       util.parseSettingFile('./test/settings_sample.yaml');
 
       util.users['XX3NKUBXX'] =  {name: "hideack"};
+      util.users['YY3NKUBXX'] =  {name: "alice"};
       util.channels['XXEGEXXS0'] = "times_hideack";
+      util.channels['YYEGEXXS0'] = "times_alice";
       util.keywords = ["hideack", "nice"];
     });
 
@@ -120,7 +122,7 @@ describe("設定ファイル読み込みのテスト", () => {
 
 
     it("関係のないメッセージにはhookが何も反応しないこと", () => {
-      let message = {type: 'message', channel: 'YYEGEXXS0', user: 'XX3NKUBXX', text: 'テストです', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      let message = {type: 'message', channel: 'YYEGEXXS0', user: 'YY3NKUBXX', text: 'テストです', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), [], "user, channelが一致したためhookさせるコマンドが返る");
     });
   });
