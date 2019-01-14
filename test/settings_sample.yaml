@@ -10,6 +10,9 @@ hooks:
     keyword: テストです
     hook: curl -X http://example.com/ -d {hoge:foo}
   -
+    user: hideack
+    hook: echo HOGE
+  -
     user: foo
     keyword: bar
     hook: curl -X http://example.com/ -d {hoge:123}
