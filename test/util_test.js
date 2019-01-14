@@ -94,8 +94,8 @@ describe("設定ファイル読み込みのテスト", () => {
 
       util.users['XX3NKUBXX'] =  {name: "hideack"};
       util.users['YY3NKUBXX'] =  {name: "alice"};
-      util.channels['XXEGEXXS0'] = "times_hideack";
-      util.channels['YYEGEXXS0'] = "times_alice";
+      util.channels['XXEGEXXS0'] = {name:"times_hideack"};
+      util.channels['YYEGEXXS0'] = {name:"times_alice"};
       util.keywords = ["hideack", "nice"];
     });
 
