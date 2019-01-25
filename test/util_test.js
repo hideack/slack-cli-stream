@@ -88,6 +88,44 @@ describe("設定ファイル読み込みのテスト", () => {
     assert.equal(util.hook, "curl -X http://example.com/ -d {hoge:foo}", "hook用コマンドがYAMLから読み取れている");
   });
 
+  describe("hooks定義読み取りのテスト", () => {
+    beforeEach( () => {
+      util.parseSettingFile('./test/settings_sample.yaml');
+
+      util.users['XX3NKUBXX'] =  {name: "hideack"};
+      util.users['YY3NKUBXX'] =  {name: "alice"};
+      util.channels['XXEGEXXS0'] = {name:"times_hideack"};
+      util.channels['YYEGEXXS0'] = {name:"times_alice"};
+      util.keywords = ["hideack", "nice"];
+    });
+
+    it("複数のhook定義が入っていること(但しhookの定義がないものは除外される)", () => {
+      assert.equal(util.hooks.length, 3, "3件分の定義が存在すること");
+    });
+
+    it("1件目の定義に必要な設定が読み取られていること", () => {
+      assert.equal(util.hooks[0].user,    "hideack", "Slack IDの定義が存在する");
+      assert.equal(util.hooks[0].channel, "times_hideack", "チャンネルの定義が存在する");
+      assert.equal(util.hooks[0].keyword, "テストです", "一致チェック用のキーワードが存在する");
+      assert.equal(util.hooks[0].hook, "curl -X http://example.com/ -d {hoge:foo}", "コマンドが存在する");
+    });
+
+    it("メッセージに設定ファイルで指定したファイルとSlackメッセージが一致したらhookさせるコマンドが返ること", () => {
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'テストです', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      assert.deepEqual(util.hasHooks(message), ["curl -X http://example.com/ -d {hoge:foo}", "echo HOGE"], "キーワード, user, channelが一致したためhookさせるコマンドが返る");
+    });
+
+    it("メッセージがなくともユーザーが一致したらhookさせるコマンドが返ること", () => {
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      assert.deepEqual(util.hasHooks(message), ["echo HOGE"], "userが一致したためhookさせるコマンドが返る");
+    });
+
+
+    it("関係のないメッセージにはhookが何も反応しないこと", () => {
+      let message = {type: 'message', channel: 'YYEGEXXS0', user: 'YY3NKUBXX', text: 'テストです', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      assert.deepEqual(util.hasHooks(message), [], "user, channelが一致したためhookさせるコマンドが返る");
+    });
+  });
 });
 
 

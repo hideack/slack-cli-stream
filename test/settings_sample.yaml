@@ -3,3 +3,20 @@ keywords:
   - xyz
 token: xoxp-xxxx-xxxx-xxxx-xxxx
 hook: curl -X http://example.com/ -d {hoge:foo}
+hooks:
+  -
+    user: hideack
+    channel: times_hideack
+    keyword: テストです
+    hook: curl -X http://example.com/ -d {hoge:foo}
+  -
+    user: hideack
+    hook: echo HOGE
+  -
+    user: foo
+    keyword: bar
+    hook: curl -X http://example.com/ -d {hoge:123}
+  -
+    user: test1
+    keyword: test2
+
