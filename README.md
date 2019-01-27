@@ -26,12 +26,25 @@ $ slack-cli-stream --settings setting.yaml
 ```
 
 #### setting.yaml
+- token: Slackトークン
+- hooks
+  - user: フックさせる際に対象ユーザーを固定する場合に指定
+  - channel: フックさせる際に対象チャンネルを固定する場合に指定
+  - keyword: 特定のキーワードのみにフックさせる場合に指定
+  - hook: フック条件に合致し、発火した場合に実行するコマンドを記述
+
 
 ```yaml
-keywords:
-  - abc
-  - xyz
-token: xoxp-xxxx-xxxx-xxxx-xxxx
+token: xoxp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+hooks:
+  -
+    user: hideack
+    hook: curl -X PUT https://pixe.la/v1/users/hideack/graphs/slack-message/increment -H 'X-USER-TOKEN:xxxx' -H 'Content-Length:0'
+  -
+    user: hideack
+    channel: general
+    keyword: hello
+    hook: say hello
 ```
 
 ## Contributing
