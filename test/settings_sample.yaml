@@ -3,6 +3,9 @@ keywords:
   - xyz
 token: xoxp-xxxx-xxxx-xxxx-xxxx
 hook: curl -X http://example.com/ -d {hoge:foo}
+theme:
+  text: green
+  date: red
 hooks:
   -
     user: hideack
