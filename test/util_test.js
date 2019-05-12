@@ -90,7 +90,8 @@ describe("設定ファイル読み込みのテスト", () => {
 
   it("themeカテゴリが読めていること", () => {
     util.parseSettingFile('./test/settings_sample.yaml');
-    assert.equal(util.theme.text, "green", "テキスト用色指定が読み込めている");
+    assert.equal(util.theme.text, "green", "メッセージの表示色用色指定が読み込めている");
+    assert.equal(util.theme.date, "red", "日付の表示用色指定が読み込めている");
   });
 
   describe("hooks定義読み取りのテスト", () => {
