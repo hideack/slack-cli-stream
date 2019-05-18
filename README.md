@@ -32,7 +32,9 @@ $ slack-cli-stream --settings setting.yaml
   - channel: フックさせる際に対象チャンネルを固定する場合に指定
   - keyword: 特定のキーワードのみにフックさせる場合に指定
   - hook: フック条件に合致し、発火した場合に実行するコマンドを記述
-
+- theme
+  - text: メッセージ表示色
+  - date: 日付表示職
 
 ```yaml
 token: xoxp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -45,6 +47,9 @@ hooks:
     channel: general
     keyword: hello
     hook: say hello
+theme:
+  text: green
+  date: green
 ```
 
 ## Contributing
