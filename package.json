@@ -39,7 +39,7 @@
   "devDependencies": {
     "lodash": ">=4.17.11",
     "chai": "^4.1.2",
-    "eslint": "^5.0.0",
+    "eslint": "^6.0.0",
     "mocha": "^6.0.0"
   }
 }
