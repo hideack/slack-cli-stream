@@ -117,7 +117,7 @@ describe("設定ファイル読み込みのテスト", () => {
     });
 
     // ts: '1563587208.0006'   / 2019-07-20 10:46:48
-    // ts: '1563608808.000600' / 2019-07-20 16:46:48
+    // ts: '1563634758.000600' / 2019-07-20 23:59:18
     
     it("メッセージに設定ファイルで指定したファイルとSlackメッセージが一致したらhookさせるコマンドが返ること", () => {
       let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'テストです', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
@@ -129,7 +129,6 @@ describe("設定ファイル読み込みのテスト", () => {
       assert.deepEqual(util.hasHooks(message), ["echo HOGE"], "userが一致したためhookさせるコマンドが返る");
     });
 
-
     it("関係のないメッセージにはhookが何も反応しないこと", () => {
       let message = {type: 'message', channel: 'YYEGEXXS0', user: 'YY3NKUBXX', text: 'テストです', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), [], "user, channelが一致したためhookさせるコマンドが返る");
@@ -138,11 +137,6 @@ describe("設定ファイル読み込みのテスト", () => {
     it("cronとしてセットした時間(12:00)より前なのでcron入れたhookは反応しないこと", () =>{
       let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), ["echo HOGE"], "userが一致したためhookさせるコマンドが1つ返る");
-    });
-
-    it("cronとしてセットした時間(12:00)より後ろなのでhookも反応すること", () =>{
-      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1563608808.000600',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
-      assert.deepEqual(util.hasHooks(message), ["echo HOGE", "cron test"], "userが一致したのと時刻が一致したのでhookさせるコマンドが2つ返る");
     });
   });
 });
