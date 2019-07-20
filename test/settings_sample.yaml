@@ -24,5 +24,5 @@ hooks:
     keyword: test2
   -
     user: hideack
-    cron: 0 12 * * * *
+    cron: "58 23 * * *"
     hook: cron test
