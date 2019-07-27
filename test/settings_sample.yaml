@@ -22,4 +22,7 @@ hooks:
   -
     user: test1
     keyword: test2
-
+  -
+    user: hideack
+    cron: "58 23 * * *"
+    hook: cron test

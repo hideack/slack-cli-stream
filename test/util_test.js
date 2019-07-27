@@ -27,9 +27,9 @@ describe("Slack messageのテキストパーサーのテスト", () => {
 
   let twitterBotMessage = {"bot_id":"XXE0S2FXX","attachments":[{"fallback":"<https://twitter.com/hideack@hideack>: Test message","ts":1495864801,"author_name":"hideack","author_link":"https://twitter.com/hideack/status/868346031640989696","author_icon":"https://pbs.twimg.com/profile_images/hideack/hideack_normal.png","author_subname":"@hideack","pretext":"<https://twitter.com/hideack/status/868346031640989696>","text":"Test message","service_name":"twitter","service_url":"https://twitter.com/","from_url":"https://twitter.com/hideack/status/868346031640989696","image_url":"https://pbs.twimg.com/media/DAv6DVjUIAAVlrY.jpg","image_width":1200,"image_height":800,"image_bytes":273940,"id":1,"footer":"Twitter","footer_icon":"https://a.slack-edge.com/6e067/img/services/twitter_pixel_snapped_32.png"}],"type":"message","subtype":"bot_message","team":"XX3GLB4XX","channel":"XXNQBEEXX","event_ts":"1495864803.324462","ts":"1495864803.324462","level":"error","message":"","timestamp":"2017-05-27T06:00:04.121Z"};
 
-  let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'normal message', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+  let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'normal message', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
 
-  let noTextMessage = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+  let noTextMessage = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
 
   it("通常のメッセージの場合はtextプロパティ参照", () => {
     assert.equal(util.parseText(message), "normal message", "メッセージ中のtextが抽出できている");
@@ -106,7 +106,7 @@ describe("設定ファイル読み込みのテスト", () => {
     });
 
     it("複数のhook定義が入っていること(但しhookの定義がないものは除外される)", () => {
-      assert.equal(util.hooks.length, 3, "3件分の定義が存在すること");
+      assert.equal(util.hooks.length, 4, "4件分の定義が存在すること");
     });
 
     it("1件目の定義に必要な設定が読み取られていること", () => {
@@ -116,20 +116,27 @@ describe("設定ファイル読み込みのテスト", () => {
       assert.equal(util.hooks[0].hook, "curl -X http://example.com/ -d {hoge:foo}", "コマンドが存在する");
     });
 
+    // ts: '1563587208.0006'   / 2019-07-20 10:46:48
+    // ts: '1563634758.000600' / 2019-07-20 23:59:18
+    
     it("メッセージに設定ファイルで指定したファイルとSlackメッセージが一致したらhookさせるコマンドが返ること", () => {
-      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'テストです', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'テストです', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), ["curl -X http://example.com/ -d {hoge:foo}", "echo HOGE"], "キーワード, user, channelが一致したためhookさせるコマンドが返る");
     });
 
     it("メッセージがなくともユーザーが一致したらhookさせるコマンドが返ること", () => {
-      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), ["echo HOGE"], "userが一致したためhookさせるコマンドが返る");
     });
 
-
     it("関係のないメッセージにはhookが何も反応しないこと", () => {
-      let message = {type: 'message', channel: 'YYEGEXXS0', user: 'YY3NKUBXX', text: 'テストです', ts: '1495868089.515753',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      let message = {type: 'message', channel: 'YYEGEXXS0', user: 'YY3NKUBXX', text: 'テストです', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), [], "user, channelが一致したためhookさせるコマンドが返る");
+    });
+
+    it("cronとしてセットした時間(12:00)より前なのでcron入れたhookは反応しないこと", () =>{
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      assert.deepEqual(util.hasHooks(message), ["echo HOGE"], "userが一致したためhookさせるコマンドが1つ返る");
     });
   });
 });
