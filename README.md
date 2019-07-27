@@ -31,6 +31,7 @@ $ slack-cli-stream --settings setting.yaml
   - user: フックさせる際に対象ユーザーを固定する場合に指定
   - channel: フックさせる際に対象チャンネルを固定する場合に指定
   - keyword: 特定のキーワードのみにフックさせる場合に指定
+  - cron: 設定に記載したhookの発動条件をcron表記で指定
   - hook: フック条件に合致し、発火した場合に実行するコマンドを記述
 - theme
   - text: メッセージ表示色
@@ -47,6 +48,9 @@ hooks:
     channel: general
     keyword: hello
     hook: say hello
+  -
+    cron: "*/5 12-23 * * *"
+    hook: "curl -X POST -d "fizz=buzz2" http://requestbin.fullcontact.com/xxxxxxx"
 theme:
   text: green
   date: green
