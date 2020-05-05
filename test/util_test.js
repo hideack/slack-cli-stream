@@ -94,6 +94,23 @@ describe("設定ファイル読み込みのテスト", () => {
     assert.equal(util.theme.date, "red", "日付の表示用色指定が読み込めている");
   });
 
+  describe("twitter設定読み込みのテスト", () => {
+    it("twitterの設定が無いYAMLファイルの場合、util.twitterのプロパティがfalseになっていること", () => {
+      util.parseSettingFile('./test/settings_sample_without_twitter.yaml');
+      assert.equal(util.twitter, false, "util.twitterのプロパティがfalse");
+    });
+
+    it("正しいYAMLファイルの場合、consumer keyが読めていること", () => {
+      util.parseSettingFile('./test/settings_sample.yaml');
+      assert.equal(util.twitter.consumer_key, "CONSUMER_KEY_SAMPLE", "サンプルの設定が読めている (consumer key)");
+    });
+
+    it("誤ったYAMLファイルの場合、util.twitterのプロパティがfalseになっていること", () => {
+      util.parseSettingFile('./test/settings_sample_invalid_twitter.yaml');
+      assert.equal(util.twitter, false, "util.twitterのプロパティがfalse");
+    });
+  });
+
   describe("hooks定義読み取りのテスト", () => {
     beforeEach( () => {
       util.parseSettingFile('./test/settings_sample.yaml');
