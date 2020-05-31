@@ -26,9 +26,4 @@ hooks:
     user: hideack
     cron: "58 23 * * *"
     hook: cron test
-twitter:
-  consumer_key: CONSUMER_KEY_SAMPLE
-  consumer_secret: CONSUMER_SECRET_SAMPLE
-  access_token_key: ACCESS_TOKEN_KEY_SAMPLE
-  access_token_secret: ACCESS_TOKEN_SECRET_SAMPLE
 
