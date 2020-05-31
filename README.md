@@ -26,7 +26,8 @@ $ slack-cli-stream --settings setting.yaml
 ```
 
 #### setting.yaml
-- token: Slackトークン
+- token: 【必須】Slackトークン
+- twitter: 【任意】twitter APIのconsumer, accessのそれぞれのkey, secret
 - hooks
   - user: フックさせる際に対象ユーザーを固定する場合に指定
   - channel: フックさせる際に対象チャンネルを固定する場合に指定
@@ -39,6 +40,11 @@ $ slack-cli-stream --settings setting.yaml
 
 ```yaml
 token: xoxp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+twitter:
+  consumer_key: ***
+  consumer_secret: ***
+  access_token_key: ***
+  access_token_secret: ***
 hooks:
   -
     user: hideack
