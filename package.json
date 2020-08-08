@@ -25,6 +25,7 @@
   "homepage": "https://github.com/hideack/slack-cli-stream#readme",
   "dependencies": {
     "@slack/client": "^5.0.0",
+    "axios": "^0.19.2",
     "chalk": "^4.0.0",
     "commander": "^5.0.0",
     "cron-parser": "^2.12.0",
