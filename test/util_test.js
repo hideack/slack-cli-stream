@@ -2,6 +2,8 @@ let assert = require("chai").assert;
 let util = require("../lib/utility.js");
 let moment = require("moment");
 
+const { expect } = require("chai");
+
 describe("Slack ID置換のテスト", () => {
   beforeEach( () => {
     util.users['U0XXYYZZ0'] =  {name: "alice"};
@@ -193,3 +195,8 @@ describe("メッセージバッファのテスト", () => {
   });
 });
 
+describe("Slackにアップロードされたイメージチェック", () => {
+  it("Slack以外のホストが渡されたときに例外が発生すること", () => {
+    expect(() => util.showSlackBinaryImage("https://github.com/hideack/slack-cli-stream")).to.throw();
+  });
+});
