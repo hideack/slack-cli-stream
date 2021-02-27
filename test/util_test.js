@@ -2,6 +2,8 @@ let assert = require("chai").assert;
 let util = require("../lib/utility.js");
 let moment = require("moment");
 
+require('./_supports-color')(__dirname);
+
 console.log('TERM:', process.env.TERM || '[none]');
 console.log('platform:', process.platform || '[unknown]');
 
