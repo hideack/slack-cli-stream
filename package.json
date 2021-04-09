@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint lib/*.js bin/*",
-    "test": "npm run lint && mocha --require ./test/helper.js"
+    "test": "npm run lint && mocha --colors --require ./test/helper.js"
   },
   "bin": {
     "slack-cli-stream": "bin/slack-cli-stream"
