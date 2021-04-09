@@ -2,6 +2,11 @@ let assert = require("chai").assert;
 let util = require("../lib/utility.js");
 let moment = require("moment");
 
+require('./_supports-color')(__dirname);
+
+console.log('TERM:', process.env.TERM || '[none]');
+console.log('platform:', process.platform || '[unknown]');
+
 describe("Slack ID置換のテスト", () => {
   beforeEach( () => {
     util.users['U0XXYYZZ0'] =  {name: "alice"};
@@ -67,6 +72,7 @@ describe("テキスト装飾のテスト", () => {
 
   it("キーワード指定された文字が赤太文字となること", () => {
     let expectedText = "Hello \u001b[31m\u001b[1mhideack\u001b[22m\u001b[39m. Have a \u001b[31m\u001b[1mnice\u001b[22m\u001b[39m day";
+
     assert.equal(util.decolateText("Hello hideack. Have a nice day"), expectedText, "hideackとniceという単語が赤太文字になっている");
   });
 });
