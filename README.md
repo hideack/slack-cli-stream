@@ -1,4 +1,7 @@
 # slack-cli-stream
+
+[![Node.js CI](https://github.com/hideack/slack-cli-stream/actions/workflows/node.js.yml/badge.svg)](https://github.com/hideack/slack-cli-stream/actions/workflows/node.js.yml)
+
 ## Installation
 
 ```
