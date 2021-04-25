@@ -26,7 +26,7 @@
   "dependencies": {
     "@slack/client": "^5.0.2",
     "chalk": "^4.1.1",
-    "commander": "7.2.0",
+    "commander": "6.2.1",
     "cron-parser": "^3.4.0",
     "fifo": "^2.3.0",
     "js-yaml": ">=4.1.0",
