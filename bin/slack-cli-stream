@@ -19,8 +19,8 @@ program
   .option("-u, --user <user>", "The name to be displayed on screens.")
   .option("-d, --debug <path>", "Debug flag. (The destination to save your log file.)")
   .option("-h, --hook", "Enable realtime messaging hook.")
-  .option('-l, --log <path>', 'Specify the log file path')
-  .option('--no-log', 'Do not record logs')
+  .option("-l, --log <path>", "Specify the log file path")
+  .option("--no-log", "Do not record logs")
   .usage("[options] <parameters>")
   .parse(process.argv);
 

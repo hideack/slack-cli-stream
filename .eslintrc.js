@@ -26,6 +26,7 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-control-regex": "off"
     }
 };
