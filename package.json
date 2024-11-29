@@ -33,6 +33,7 @@
     "moment": "^2.29.4",
     "nconf": "^0.12.0",
     "node-emoji": "^1.11.0",
+    "openai": "^3.2.1",
     "shell": "^0.8.5",
     "sprintf-js": "^1.1.2",
     "twitter": "^1.7.1",

@@ -100,6 +100,11 @@ describe("設定ファイル読み込みのテスト", () => {
     assert.equal(util.theme.date, "red", "日付の表示用色指定が読み込めている");
   });
 
+  it("OpenAI API用の設定が読めていること", () => {
+    util.parseSettingFile('./test/settings_sample.yaml');
+    assert.equal(util.openai_api_key, "sk-xxxxxyyyyyzzzzzz", "OpenAI API用のキーが読み取れている");
+  });
+
   describe("twitter設定読み込みのテスト", () => {
     it("twitterの設定が無いYAMLファイルの場合、util.twitterのプロパティがfalseになっていること", () => {
       util.parseSettingFile('./test/settings_sample_without_twitter.yaml');
