@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/hideack/slack-cli-stream#readme",
   "dependencies": {
-    "@slack/client": "^5.0.2",
+    "@slack/client": "^4.12.0",
     "@slack/rtm-api": "^7.0.4",
     "chalk": "^4.1.2",
     "commander": "10.0.0",
@@ -36,7 +36,7 @@
     "node-emoji": "^1.11.0",
     "shell": "^0.8.5",
     "sprintf-js": "^1.1.2",
-    "twitter": "^1.7.1",
+    "twitter": "^1.1.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {
