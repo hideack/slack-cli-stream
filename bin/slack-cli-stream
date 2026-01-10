@@ -21,6 +21,7 @@ program
   .option("-h, --hook", "Enable realtime messaging hook.")
   .option("-l, --log <path>", "Specify the log file path")
   .option("--no-log", "Do not record logs")
+  .option("--refresh-interval <minutes>", "Refresh Slack metadata interval in minutes (default: 15)")
   .usage("[options] <parameters>")
   .parse(process.argv);
 
@@ -31,4 +32,3 @@ if (program.rawArgs.length == 2) {
 }
 
 core.start(program);
-
