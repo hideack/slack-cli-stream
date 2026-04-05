@@ -23,6 +23,7 @@ program
   .option("--no-log", "Do not record logs")
   .option("--log-sqlite <path>", "Specify the SQLite database file path for logging")
   .option("--refresh-interval <minutes>", "Refresh Slack metadata interval in minutes (default: 15)")
+  .option("--mcp-port <port>", "Enable MCP server on the given port (e.g. 3737)")
   .usage("[options] <parameters>")
   .parse(process.argv);
 

@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/hideack/slack-cli-stream#readme",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.0",
     "@slack/client": "^4.12.0",
     "@slack/rtm-api": "^7.0.4",
     "better-sqlite3": "^12.8.0",
@@ -36,7 +37,8 @@
     "nconf": "^0.12.0",
     "node-emoji": "^1.11.0",
     "sprintf-js": "^1.1.2",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "chai": "^4.3.7",
