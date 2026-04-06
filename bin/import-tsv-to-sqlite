@@ -1,0 +1,104 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+const path = require("path");
+const { initSqliteDb } = require("../lib/sqlite-logger");
+
+const args = process.argv.slice(2);
+if (args.length < 2) {
+  console.error("Usage: import-tsv-to-sqlite <logs-dir> <db-path>");
+  process.exit(1);
+}
+
+const logsDir = args[0];
+const dbPath = args[1];
+
+const db = initSqliteDb(dbPath);
+
+const insert = db.prepare(`
+  INSERT INTO messages (logged_at, channel, user, message)
+  VALUES (?, ?, ?, ?)
+`);
+
+const exists = db.prepare(`
+  SELECT 1 FROM messages
+  WHERE logged_at = ? AND channel = ? AND user = ? AND message = ?
+  LIMIT 1
+`);
+
+const importFile = (filePath) => {
+  const lines = fs.readFileSync(filePath, "utf-8").split("\n");
+  let pending = null;
+  let count = 0;
+  let skipped = 0;
+
+  const flush = () => {
+    if (!pending) return;
+    if (!exists.get(pending.loggedAt, pending.channel, pending.user, pending.message)) {
+      insert.run(pending.loggedAt, pending.channel, pending.user, pending.message);
+      count++;
+    } else {
+      skipped++;
+    }
+    pending = null;
+  };
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+
+    const parts = line.split("\t");
+    if (parts.length < 4) continue;
+
+    const [loggedAt, channel, user, ...rest] = parts;
+    const message = rest.join("\t");
+
+    if (user === "|>") {
+      if (pending) {
+        pending.message += "\n" + message;
+      }
+    } else {
+      flush();
+      pending = { loggedAt, channel, user, message };
+    }
+  }
+
+  flush();
+  return { count, skipped };
+};
+
+const collectTsvFiles = (dir) => {
+  const results = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...collectTsvFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith(".tsv")) {
+      results.push(fullPath);
+    }
+  }
+  return results.sort();
+};
+
+const files = collectTsvFiles(logsDir);
+if (files.length === 0) {
+  console.error(`No .tsv files found in: ${logsDir}`);
+  process.exit(1);
+}
+
+console.log(`Found ${files.length} TSV file(s). Importing...`);
+
+const importAll = db.transaction(() => {
+  let totalInserted = 0;
+  let totalSkipped = 0;
+  for (const file of files) {
+    const { count, skipped } = importFile(file);
+    const label = skipped > 0 ? `${count} inserted, ${skipped} skipped` : `${count} inserted`;
+    console.log(`  ${path.relative(logsDir, file)}: ${label}`);
+    totalInserted += count;
+    totalSkipped += skipped;
+  }
+  return { totalInserted, totalSkipped };
+});
+
+const { totalInserted, totalSkipped } = importAll();
+console.log(`Done. ${totalInserted} inserted, ${totalSkipped} skipped (duplicates) into ${dbPath}`);
