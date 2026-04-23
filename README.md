@@ -30,7 +30,8 @@ $ slack-cli-stream --settings setting.yaml
 - hooks
   - user: フックさせる際に対象ユーザーを固定する場合に指定
   - channel: フックさせる際に対象チャンネルを固定する場合に指定
-  - keyword: 特定のキーワードのみにフックさせる場合に指定
+  - keyword: 特定のキーワードのみにフックさせる場合に指定（完全一致）
+  - prefix: 特定の文字列で始まるメッセージにフックさせる場合に指定（前方一致）
   - cron: 設定に記載したhookの発動条件をcron表記で指定
   - hook: フック条件に合致し、発火した場合に実行するコマンドを記述
 - theme
@@ -53,6 +54,11 @@ hooks:
     channel: general
     keyword: hello
     hook: say hello
+  -
+    user: hideack
+    channel: general
+    prefix: "!deploy"
+    hook: /path/to/deploy.sh
   -
     cron: "*/5 12-23 * * *"
     hook: "curl -X POST -d "fizz=buzz2" http://requestbin.fullcontact.com/xxxxxxx"
