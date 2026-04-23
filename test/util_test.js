@@ -112,7 +112,7 @@ describe("設定ファイル読み込みのテスト", () => {
     });
 
     it("複数のhook定義が入っていること(但しhookの定義がないものは除外される)", () => {
-      assert.equal(util.hooks.length, 4, "4件分の定義が存在すること");
+      assert.equal(util.hooks.length, 5, "5件分の定義が存在すること");
     });
 
     it("1件目の定義に必要な設定が読み取られていること", () => {
@@ -143,6 +143,16 @@ describe("設定ファイル読み込みのテスト", () => {
     it("cronとしてセットした時間(12:00)より前なのでcron入れたhookは反応しないこと", () =>{
       let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'slack', ts: '1563587208.0006',source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
       assert.deepEqual(util.hasHooks(message), ["echo HOGE"], "userが一致したためhookさせるコマンドが1つ返る");
+    });
+
+    it("prefixが一致したらhookさせるコマンドが返ること", () => {
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: '!deploy production', ts: '1563587208.0006', source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      assert.include(util.hasHooks(message), "echo DEPLOY", "prefixが一致したためhookさせるコマンドが返る");
+    });
+
+    it("prefixが一致しない場合はhookが反応しないこと", () => {
+      let message = {type: 'message', channel: 'XXEGEXXS0', user: 'XX3NKUBXX', text: 'hello world', ts: '1563587208.0006', source_team: 'XXYGLB4ZZ', team: 'ZZ3GLB4XX' };
+      assert.notInclude(util.hasHooks(message), "echo DEPLOY", "prefixが一致しないためhookが反応しない");
     });
   });
 });

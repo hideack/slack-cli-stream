@@ -26,6 +26,11 @@ hooks:
     user: hideack
     cron: "58 23 * * *"
     hook: cron test
+  -
+    user: hideack
+    channel: times_hideack
+    prefix: "!deploy"
+    hook: echo DEPLOY
 logging:
   file: ./logs
   sqlite: ./logs/slack.db
