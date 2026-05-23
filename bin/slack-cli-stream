@@ -3,6 +3,7 @@
 let program = require("commander");
 let core = require("../lib/core");
 let chalk = require("chalk");
+let { showStatus } = require("../lib/status");
 
 let showLogo = () => {
   console.log(chalk.cyan("  ____    _                  _         ____   _       ___           _"));
@@ -24,12 +25,24 @@ program
   .option("--log-sqlite <path>", "Specify the SQLite database file path for logging")
   .option("--refresh-interval <minutes>", "Refresh Slack metadata interval in minutes (default: 15)")
   .option("--mcp-port <port>", "Enable MCP server on the given port (e.g. 3737)")
+  .option("--status", "Show Slack usage status for the past week and exit")
   .usage("[options] <parameters>")
   .parse(process.argv);
 
 if (program.rawArgs.length == 2) {
   showLogo();
   program.help();
+  process.exit(0);
+}
+
+const opts = program.opts();
+
+if (opts.status) {
+  if (!opts.logSqlite) {
+    console.error(chalk.red("Error: --status requires --log-sqlite <path>"));
+    process.exit(1);
+  }
+  showStatus(opts.logSqlite);
   process.exit(0);
 }
 
