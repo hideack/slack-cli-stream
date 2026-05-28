@@ -26,6 +26,7 @@ program
   .option("--refresh-interval <minutes>", "Refresh Slack metadata interval in minutes (default: 15)")
   .option("--mcp-port <port>", "Enable MCP server on the given port (e.g. 3737)")
   .option("--status", "Show Slack usage status for the past week and exit")
+  .option("--backfill-from <datetime>", "Force backfill from the specified date/time (e.g. \"2026-05-28\" or \"2026-05-28 09:00\")")
   .usage("[options] <parameters>")
   .parse(process.argv);
 
