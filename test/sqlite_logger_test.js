@@ -2,7 +2,7 @@ let assert = require("chai").assert;
 let fs = require("fs");
 let os = require("os");
 let path = require("path");
-let { initSqliteDb, logMessageSqlite } = require("../lib/sqlite-logger");
+let { initSqliteDb, logMessageSqlite, getInjectedChannelLabels } = require("../lib/sqlite-logger");
 
 describe("SQLiteロガーのテスト", () => {
   let db;
@@ -180,6 +180,35 @@ describe("SQLiteロガーのテスト", () => {
         "SELECT m.* FROM messages m JOIN messages_fts f ON m.id = f.rowid WHERE messages_fts MATCH ?"
       ).all("notexist");
       assert.equal(rows.length, 0, "0件ヒットする");
+    });
+  });
+
+  describe("getInjectedChannelLabels", () => {
+    it("注入チャンネル(channel_idが#始まり)のラベルが取得できること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#claude", "claude", "progress", "#claude", "claude", null, null);
+      logMessageSqlite(db, "2026-04-05 12:00:01", "#agent",  "claude", "done",     "#agent",  "claude", null, null);
+      const labels = getInjectedChannelLabels(db);
+      assert.deepEqual(labels, ["#agent", "#claude"], "#始まりのchannel_idがソートされて返る");
+    });
+
+    it("Slackチャンネル(channel_idがID形式)は含まれないこと", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice",  "Hello",    "C0123",   "U0001",  "100.000", null);
+      logMessageSqlite(db, "2026-04-05 12:00:01", "#claude",  "claude", "progress", "#claude", "claude", null, null);
+      const labels = getInjectedChannelLabels(db);
+      assert.deepEqual(labels, ["#claude"], "Slackチャンネルは除外される");
+    });
+
+    it("同一ラベルは重複排除されること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#claude", "claude", "line1", "#claude", "claude", null, null);
+      logMessageSqlite(db, "2026-04-05 12:00:01", "#claude", "claude", "line2", "#claude", "claude", null, null);
+      const labels = getInjectedChannelLabels(db);
+      assert.deepEqual(labels, ["#claude"], "DISTINCTで1件になる");
+    });
+
+    it("注入チャンネルがない場合は空配列が返ること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "Hello", "C0123", "U0001", "100.000", null);
+      const labels = getInjectedChannelLabels(db);
+      assert.deepEqual(labels, [], "空配列が返る");
     });
   });
 });
