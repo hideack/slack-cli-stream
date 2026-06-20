@@ -184,6 +184,75 @@ describe("MCPサーバーのテスト", () => {
   });
 });
 
+describe("post_to_stream ツールのテスト", () => {
+  let server, port;
+  const calls = [];
+
+  const mockUtil = { channels: {}, users: {}, buffer: {} };
+  const postToStream = (text, opts) => { calls.push({ text, opts }); };
+
+  before((done) => {
+    server = startMcpServer({ port: 0, sqliteDb: null, util: mockUtil, postToStream });
+    server.on("listening", () => {
+      port = server.address().port;
+      done();
+    });
+  });
+
+  after((done) => {
+    server.close(done);
+  });
+
+  it("post_to_streamがpostToStreamコールバックを引数付きで呼び出すこと", async () => {
+    calls.length = 0;
+    const res = await callTool(port, "post_to_stream", {
+      text: "進捗: タスク完了",
+      channel: "agent-log",
+      user: "claude",
+    });
+    assert.isNotNull(res.body, "レスポンスボディが存在する");
+    const isError = res.body && res.body.result && res.body.result.isError;
+    assert.isNotTrue(isError, "isErrorがtrueでないこと");
+    assert.lengthOf(calls, 1, "postToStreamが1回呼ばれること");
+    assert.equal(calls[0].text, "進捗: タスク完了", "textが渡ること");
+    assert.equal(calls[0].opts.channel, "agent-log", "channelが渡ること");
+    assert.equal(calls[0].opts.user, "claude", "userが渡ること");
+  });
+
+  it("channel/user省略時もデフォルトで呼び出せること", async () => {
+    calls.length = 0;
+    const res = await callTool(port, "post_to_stream", { text: "hello" });
+    const isError = res.body && res.body.result && res.body.result.isError;
+    assert.isNotTrue(isError, "isErrorがtrueでないこと");
+    assert.lengthOf(calls, 1, "postToStreamが1回呼ばれること");
+    assert.equal(calls[0].text, "hello", "textが渡ること");
+  });
+});
+
+describe("post_to_stream ツール (コールバック未設定) のテスト", () => {
+  let server, port;
+  const mockUtil = { channels: {}, users: {}, buffer: {} };
+
+  before((done) => {
+    server = startMcpServer({ port: 0, sqliteDb: null, util: mockUtil });
+    server.on("listening", () => {
+      port = server.address().port;
+      done();
+    });
+  });
+
+  after((done) => {
+    server.close(done);
+  });
+
+  it("postToStream未設定時はエラーを返すこと", async () => {
+    const res = await callTool(port, "post_to_stream", { text: "hello" });
+    assert.isNotNull(res.body, "レスポンスボディが存在する");
+    const isError = res.body && res.body.result && res.body.result.isError;
+    assert.isTrue(isError, "isErrorがtrueであること");
+  });
+});
+
 describe("MCPサーバー (SQLite無し) のテスト", () => {
   let server, port;
 
