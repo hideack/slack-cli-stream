@@ -3,6 +3,12 @@ logs
 *.log
 npm-debug.log*
 
+# Message logs / databases (may contain real Slack message data)
+*.db
+*.sqlite
+*.sqlite3
+*.tsv
+
 # Runtime data
 pids
 *.pid

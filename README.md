@@ -82,6 +82,8 @@ mcp:
   port: 3737
 ```
 
+> **Note (セキュリティ)**: MCP サーバーは認証を行いません。`post_to_stream` による表示注入・SQLite 書き込みや、保存済みメッセージ履歴の読み取りが、ポートに到達できる相手なら誰でも可能です。`localhost` バインドのまま利用し、`0.0.0.0` での公開やポートフォワードは避けてください。
+
 提供ツール:
 
 - `search_messages` / `get_messages_by_channel` / `get_messages_by_date_range` / `get_thread_messages` — SQLite に保存した履歴の検索・取得（`--log-sqlite` 必須）
