@@ -117,6 +117,12 @@ describe("MCPサーバーのテスト", () => {
     });
   });
 
+  describe("待ち受けアドレス", () => {
+    it("ループバックのみに待ち受けること", () => {
+      assert.equal(server.address().address, "127.0.0.1", "0.0.0.0 で全インターフェースに公開されていない");
+    });
+  });
+
   describe("list_channels ツール", () => {
     it("チャンネル一覧が返ること", async () => {
       const res = await callTool(port, "list_channels", {});
