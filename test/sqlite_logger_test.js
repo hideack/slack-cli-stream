@@ -2,7 +2,7 @@ let assert = require("chai").assert;
 let fs = require("fs");
 let os = require("os");
 let path = require("path");
-let { initSqliteDb, logMessageSqlite, getInjectedChannelLabels } = require("../lib/sqlite-logger");
+let { initSqliteDb, logMessageSqlite, getInjectedChannelLabels, getLastMessageTs, hasUnmigratedRows } = require("../lib/sqlite-logger");
 
 describe("SQLiteロガーのテスト", () => {
   let db;
@@ -81,6 +81,52 @@ describe("SQLiteロガーのテスト", () => {
       assert.equal(row.name, "idx_thread_ts");
     });
 
+    it("messages_fts_deleteトリガーが作成されること", () => {
+      const row = db.prepare(
+        "SELECT name FROM sqlite_master WHERE type='trigger' AND name='messages_fts_delete'"
+      ).get();
+      assert.equal(row.name, "messages_fts_delete", "messages_fts_deleteトリガーが存在する");
+    });
+
+    it("重複排除用の一意インデックスが作成されること", () => {
+      const row = db.prepare(
+        "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_messages_dedupe'"
+      ).get();
+      assert.equal(row.name, "idx_messages_dedupe");
+    });
+
+    it("line_no カラムが存在すること", () => {
+      const columns = db.prepare("PRAGMA table_info(messages)").all();
+      assert.isTrue(columns.some((column) => column.name === "line_no"), "line_noカラムが存在する");
+    });
+
+    it("line_no カラムがない既存DBにも追加されること", () => {
+      const migratePath = path.join(os.tmpdir(), `slack-migrate-test-${Date.now()}.db`);
+      const legacy = require("better-sqlite3")(migratePath);
+      legacy.exec(`
+        CREATE TABLE messages (
+          id         INTEGER PRIMARY KEY AUTOINCREMENT,
+          logged_at  TEXT NOT NULL,
+          channel    TEXT,
+          user       TEXT,
+          message    TEXT,
+          channel_id TEXT,
+          user_id    TEXT,
+          slack_ts   TEXT,
+          thread_ts  TEXT,
+          created_at TEXT DEFAULT (datetime('now', 'localtime'))
+        )
+      `);
+      legacy.close();
+
+      const migrated = initSqliteDb(migratePath);
+      const columns = migrated.prepare("PRAGMA table_info(messages)").all();
+      migrated.close();
+      fs.unlinkSync(migratePath);
+
+      assert.isTrue(columns.some((column) => column.name === "line_no"), "line_noカラムが追加される");
+    });
+
     it("既存DBに対して再度initしてもエラーにならないこと", () => {
       assert.doesNotThrow(() => {
         const db2 = initSqliteDb(dbPath);
@@ -149,6 +195,77 @@ describe("SQLiteロガーのテスト", () => {
       const row = db.prepare("SELECT * FROM messages").get();
       assert.isNull(row.channel,    "channelがnull");
       assert.isNull(row.channel_id, "channel_idがnull");
+    });
+
+    it("line_noが保存されること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "line2", "C0001", "U0001", "100.000", null, 1);
+      const row = db.prepare("SELECT line_no FROM messages").get();
+      assert.equal(row.line_no, 1, "line_noが一致する");
+    });
+
+    it("同一メッセージの同一行を再INSERTしても増えないこと", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "Hello", "C0001", "U0001", "100.000", null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "Hello", "C0001", "U0001", "100.000", null, 0);
+      const rows = db.prepare("SELECT * FROM messages").all();
+      assert.equal(rows.length, 1, "重複INSERTが無視される");
+    });
+
+    it("同一メッセージの別の行はINSERTされること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "line1", "C0001", "U0001", "100.000", null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "line2", "C0001", "U0001", "100.000", null, 1);
+      const rows = db.prepare("SELECT * FROM messages").all();
+      assert.equal(rows.length, 2, "行番号が違えば別レコードになる");
+    });
+
+    it("同じ内容の行を2行含むメッセージが1行に潰されないこと", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "same", "C0001", "U0001", "100.000", null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "same", "C0001", "U0001", "100.000", null, 1);
+      const rows = db.prepare("SELECT * FROM messages").all();
+      assert.equal(rows.length, 2, "2行とも保存される");
+    });
+
+    it("別チャンネルの同一tsは重複扱いされないこと", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "Hello", "C0001", "U0001", "100.000", null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#random",  "alice", "Hello", "C0002", "U0001", "100.000", null, 0);
+      const rows = db.prepare("SELECT * FROM messages").all();
+      assert.equal(rows.length, 2, "channel_idが違えば別レコードになる");
+    });
+
+    it("slack_tsがない注入メッセージは重複扱いされないこと", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#claude", "claude", "progress", "#claude", "claude", null, null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:01", "#claude", "claude", "progress", "#claude", "claude", null, null, 0);
+      const rows = db.prepare("SELECT * FROM messages").all();
+      assert.equal(rows.length, 2, "slack_tsがnullなら毎回記録される");
+    });
+  });
+
+  describe("getLastMessageTs", () => {
+    it("メッセージがない場合はnullが返ること", () => {
+      assert.isNull(getLastMessageTs(db), "nullが返る");
+    });
+
+    it("最新のslack_tsが数値で返ること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "old", "C0001", "U0001", "1786802513.311509", null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:01", "#general", "alice", "new", "C0001", "U0001", "1786846852.142879", null, 0);
+      assert.equal(getLastMessageTs(db), 1786846852.142879, "最大のslack_tsが返る");
+    });
+
+    it("slack_tsを持たない注入メッセージは無視されること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "slack", "C0001", "U0001", "1786802513.311509", null, 0);
+      logMessageSqlite(db, "2026-04-05 12:00:01", "#claude", "claude", "note",  "#claude", "claude", null, null, 0);
+      assert.equal(getLastMessageTs(db), 1786802513.311509, "Slack由来のメッセージのみ対象");
+    });
+  });
+
+  describe("hasUnmigratedRows", () => {
+    it("line_no付きで記録されていればfalseになること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "Hello", "C0001", "U0001", "100.000", null, 0);
+      assert.isFalse(hasUnmigratedRows(db), "移行済みと判定される");
+    });
+
+    it("line_noのない既存行があればtrueになること", () => {
+      logMessageSqlite(db, "2026-04-05 12:00:00", "#general", "alice", "Hello", "C0001", "U0001", "100.000", null);
+      assert.isTrue(hasUnmigratedRows(db), "未移行と判定される");
     });
   });
 
