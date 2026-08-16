@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+
+// messages テーブルに溜まった重複行を削除し、line_no を振り直す一回限りの保守スクリプト。
+//
+// バックフィルが Slack の inclusive な oldest でメッセージを再取得していたため、
+// 同じメッセージが何度も INSERT されていた。削除後に line_no を振り直すことで、
+// 既存行も (channel_id, slack_ts, line_no) の一意インデックスで保護される。
+//
+// Usage:
+//   bin/dedupe-sqlite-messages <db-path> [--dry-run] [--rebuild-fts]
+
+const fs = require("fs");
+const { initSqliteDb } = require("../lib/sqlite-logger");
+const { dedupeMessages } = require("../lib/dedupe");
+
+const args = process.argv.slice(2);
+const dbPath = args.find((arg) => !arg.startsWith("--"));
+const dryRun = args.includes("--dry-run");
+const rebuildFts = args.includes("--rebuild-fts");
+
+if (!dbPath) {
+  console.error("Usage: dedupe-sqlite-messages <db-path> [--dry-run] [--rebuild-fts]");
+  process.exit(1);
+}
+
+if (!fs.existsSync(dbPath)) {
+  console.error(`Error: DBファイルが見つかりません: ${dbPath}`);
+  process.exit(1);
+}
+
+if (!dryRun) {
+  console.log("注意: 実行前に DB のバックアップを取ることを推奨します。");
+}
+
+const db = initSqliteDb(dbPath);
+
+try {
+  const before = db.prepare("SELECT COUNT(*) AS count FROM messages").get().count;
+  console.log(`対象: ${dbPath} (${before} 行)`);
+
+  const result = dedupeMessages(db, { dryRun, log: (message) => console.log(message) });
+
+  if (result.dryRun) {
+    console.log(`[dry-run] ${result.duplicateGroups} メッセージ分、${result.scanned} 行中の重複を検出しました(削除は行っていません)`);
+  } else {
+    if (rebuildFts) {
+      console.log("FTS インデックスを再構築しています...");
+      db.exec("INSERT INTO messages_fts(messages_fts) VALUES ('rebuild')");
+    }
+    const after = db.prepare("SELECT COUNT(*) AS count FROM messages").get().count;
+    console.log(`完了: ${before} 行 -> ${after} 行 (${result.deleted} 行削除)`);
+    console.log("VACUUM を実行するとファイルサイズが縮みます: sqlite3 <db-path> 'VACUUM;'");
+  }
+} finally {
+  db.close();
+}
